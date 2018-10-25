@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# coding: utf-8
 
 # De https://developer.github.com/webhooks/configuring/
 
@@ -11,10 +12,7 @@ set :port, 31415
 
 # Descarga las diferencias hechas para un push
 post '/' do
+  puts request.body.read
   push = JSON.parse(request.body.read)
-  piezas = push["compare"].split("/")
-  api_url = "/repos/#{piezas[3]}/#{piezas[4]}/compare/#{piezas[6]}"
-  diff = Net::HTTP.get(URI("https://api.github.com#{api_url}"))
-  puts diff.class
-  pp(JSON.parse(diff))
+  puts "\n\n→ " << push['compare']
 end
