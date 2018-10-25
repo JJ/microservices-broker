@@ -15,6 +15,6 @@ post '/' do
   piezas = push["compare"].split("/")
   api_url = "/repos/#{piezas[3]}/#{piezas[4]}/compare/#{piezas[6]}"
   diff = Net::HTTP.get(URI("https://api.github.com#{api_url}"))
-  puts diff
+  puts type(diff)
   pp(JSON.parse(diff))
 end
