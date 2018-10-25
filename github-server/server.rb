@@ -16,6 +16,6 @@ post '/' do
   api_url = "/repos/#{piezas[3]}/#{piezas[4]}/compare/#{piezas[6]}"
   res = HTTParty.get("https://api.github.com#{api_url}")
   pp( res )
-  diff_data = response.parsed_response
+  diff_data = res.parsed_response
   pp(diff_data)
 end
