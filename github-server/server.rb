@@ -12,4 +12,5 @@ set :port, 31415
 post '/' do
   push = JSON.parse(request.body.read)
   puts "Commit → #{push}"
+  puts "Compare -> " << push["compare"]
 end
