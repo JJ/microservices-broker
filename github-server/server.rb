@@ -11,5 +11,5 @@ set :port, 31415
 # Responde directamente desde el raíz
 post '/' do
   push = JSON.parse(request.body.read)
-  puts "Commit → #{push.compare}"
+  puts "Commit → #{push}"
 end
