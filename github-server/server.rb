@@ -5,6 +5,7 @@
 
 require 'sinatra'
 require 'json'
+require 'net/http'
 
 set :port, 31415
 
@@ -12,5 +13,9 @@ set :port, 31415
 post '/' do
   push = JSON.parse(request.body.read)
   puts "Commit → #{push}"
-  puts "Compare -> " << push["compare"]
+  piezas = push["compare"].split("/")
+  api_url = "/repos/#{piezas[3]}/#{piezas[4]}/compare/#{piezas[6]}"
+  puts api_url
+  diff = Net::HTTP.get(api_url)
+  puts diff
 end
