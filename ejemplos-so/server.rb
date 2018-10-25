@@ -12,7 +12,7 @@ set :port, 31415
 
 # Descarga las diferencias hechas para un push
 post '/' do
-  puts request.body.read
-  push = JSON.parse(request.body.read)
+  payload = request.body.read
+  push = JSON.parse(payload)
   puts "\n\n→ " << push['compare']
 end
