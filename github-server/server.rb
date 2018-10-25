@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# coding: utf-8
 
 # De https://developer.github.com/webhooks/configuring/
 
@@ -7,7 +8,10 @@ require 'json'
 
 set :port, 31415
 
-post '/payload' do
+post '/' do
   push = JSON.parse(request.body.read)
-  puts "Me enviaron este JSON: #{push.inspect}"
+  commit_sha = push.commit.sha
+  puts "Commit → #{commit_sha}"
 end
+
+
