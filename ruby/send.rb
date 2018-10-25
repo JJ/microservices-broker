@@ -7,7 +7,10 @@ connection.start
 channel = connection.create_channel
 queue = channel.queue('hello')
 
-channel.default_exchange.publish('Hello World!', routing_key: queue.name)
-puts " [x] Sent 'Hello World!'"
+loop do
+  rander = rand(10)
+  channel.default_exchange.publish("Hello #{rander}", routing_key: queue.name)
+  puts " [x] Sent 'Hello #{rander}'"
+end
 
 connection.close
