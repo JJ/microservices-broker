@@ -10,7 +10,7 @@ require 'pp'
 
 set :port, 31415
 
-# Descarga las diferencias hechas para un push
+# Golfs it down to payload processing
 post '/' do
   payload = request.body.read
   push = JSON.parse(payload)
