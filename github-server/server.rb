@@ -15,5 +15,5 @@ post '/' do
   piezas = push["compare"].split("/")
   api_url = "/repos/#{piezas[3]}/#{piezas[4]}/compare/#{piezas[6]}"
   res = HTTParty.get("https://api.github.com#{api_url}")
-  pp( res.files )
+  pp( res["files"] )
 end
