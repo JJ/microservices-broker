@@ -3,5 +3,4 @@ CREATE TABLE IF NOT EXISTS filechanges (
        filename varchar[256],
        additions int,
        deletions int
-       
 )
