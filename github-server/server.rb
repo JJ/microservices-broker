@@ -19,7 +19,6 @@ post '/' do
   api_url = "/repos/#{piezas[3]}/#{piezas[4]}/compare/#{piezas[6]}"
   res = HTTParty.get("https://api.github.com#{api_url}")
   res["files"].each do |file|
-    pp(file)
     db.execute("insert into filechanges (sha1,filename,additions,deletions) VALUES (?,?,?,?)",
                [file["sha"], file["filename"],file["additions"], file["deletions"]])
   end
