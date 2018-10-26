@@ -21,6 +21,6 @@ post '/' do
   res["files"].each do |file|
     pp(file)
     db.execute("insert into filechanges (sha,file,additions,deletions) VALUES (?,?,?,?)",
-               [file["sha"], file["filename"],file["additions"], file["deletions"]])
+               [file["sha1"], file["filename"],file["additions"], file["deletions"]])
   end
 end

@@ -52,3 +52,6 @@ build-iPhoneSimulator/
 Gemfile.lock
 
 *~
+
+#Sqlite tables
+*.db
