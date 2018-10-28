@@ -14,7 +14,7 @@ print( "Channel open" )
 # Step #5
 def descarga(channel, method, properties, body):
     """Called when we receive a message from RabbitMQ"""
-    print(" [ ] Recibido %r" % body )
+    print(" [x] Recibido %r" % body.decode )
 
 channel.basic_consume(descarga,
                       queue='hook',
