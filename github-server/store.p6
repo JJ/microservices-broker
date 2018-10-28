@@ -8,8 +8,8 @@ use Cro::HTTP::Router;
 my %changes;
 my $application = route {
     put -> $sha1, $file-name, $adds, $deletes {
-        
-        created $sha1, 'application/json', status => "OK";
+        %changes{$sha1} = { file => $file-name, adds => $adds, deletes => $deletes };
+        created $sha1, 'application/json', { status => "OK" };
     }
 }
 
