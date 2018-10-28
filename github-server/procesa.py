@@ -22,7 +22,6 @@ def descarga(channel, method, properties, body):
     with urllib.request.urlopen(api_url) as response:
         data_json = response.read()
         data = json.loads(data_json)
-        print(data)
         for f in data['files']:
             response = requests.put("http://localhost.com/%s/%s/%s/%s"
                                     %(f['sha'],f['filename'], f['additions'],f['deletions']))
