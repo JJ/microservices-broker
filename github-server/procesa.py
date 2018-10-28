@@ -23,7 +23,7 @@ def descarga(channel, method, properties, body):
         data_json = response.read()
         data = json.loads(data_json)
         for f in data['files']:
-            response = requests.put("http://localhost/%s/%s/%s/%s"
+            response = requests.put("http://localhost:2314/%s/%s/%s/%s"
                                     %(f['sha'],f['filename'], f['additions'],f['deletions']))
 
 channel.basic_consume(descarga,
