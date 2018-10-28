@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import pika
+import urllib.request
+import json
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 channel = connection.channel()
@@ -8,8 +10,6 @@ print( "Connected" )
 
 channel.queue_declare(queue="hook")
 print( "Channel open" )
-    
-
 
 # Step #5
 def descarga(channel, method, properties, body):
@@ -17,8 +17,14 @@ def descarga(channel, method, properties, body):
     url = body.decode()
     print(" [x] Recibido %r" % url )
     piezas = url.split("/")
-    api_url = "/repos/{piezas[3]}/{piezas[4]}/compare/{piezas[5]}"
-    print(url)
+    api_url = "https://api.github.com/repos/{piezas[3]}/{piezas[4]}/compare/{piezas[5]}"
+    with urllib.request.urlopen(api_url) as response:
+        data_json = response.read()
+        data = json.loads(data)
+        print(data)
+
+
+
 
 
 channel.basic_consume(descarga,
