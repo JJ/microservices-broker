@@ -10,7 +10,7 @@ connection = Bunny.new(automatically_recover: false)
 connection.start
 
 channel = connection.create_channel
-queue = channel.queue('hello')
+queue = channel.queue('hook')
 
 set :port, 31415
 
