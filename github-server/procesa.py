@@ -23,7 +23,8 @@ def descarga(channel, method, properties, body):
         data = json.loads(data_json)
         print(data)
         for f in data['files']:
-            print( f['sha'], f['filename'], f['additions'], f['deletions'])
+            response = requests.put("http://localhost.com/%s/%s/%s/%s"
+                                    %(f['sha1'],f['file'], f['additions'],f['deletions']))
 
 
 
