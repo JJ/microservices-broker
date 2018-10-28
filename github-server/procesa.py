@@ -25,7 +25,7 @@ def descarga(channel, method, properties, body):
         print(data)
         for f in data['files']:
             response = requests.put("http://localhost.com/%s/%s/%s/%s"
-                                    %(f['sha'],f['file'], f['additions'],f['deletions']))
+                                    %(f['sha'],f['filename'], f['additions'],f['deletions']))
 
 
 
