@@ -18,6 +18,7 @@ def descarga(channel, method, properties, body):
     print(" [x] Recibido %r" % url )
     piezas = url.split("/")
     api_url = "https://api.github.com/repos/{piezas[3]}/{piezas[4]}/compare/{piezas[6]}"
+    print(api_url)
     print
     with urllib.request.urlopen(api_url) as response:
         data_json = response.read()
