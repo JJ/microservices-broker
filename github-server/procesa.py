@@ -22,7 +22,8 @@ def descarga(channel, method, properties, body):
         data_json = response.read()
         data = json.loads(data_json)
         print(data)
-
+        for f in data['files']:
+            print( f['sha'], f['filename'], f['additions'], f['deletions'])
 
 
 
