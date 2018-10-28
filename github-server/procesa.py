@@ -17,7 +17,7 @@ def descarga(channel, method, properties, body):
     url = body.decode()
     print(" [x] Recibido %r" % url )
     piezas = url.split("/")
-    api_url = "/repos/%r/%r/compare/%r" % piezas[3], piezas[4], piezas[5]
+    api_url = "/repos/{piezas[3]}/{piezas[4]}/compare/{piezas[5]}"
     print(url)
 
 
