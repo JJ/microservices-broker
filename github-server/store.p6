@@ -7,10 +7,14 @@ use Cro::HTTP::Router;
 
 my %changes;
 my $application = route {
-    put -> $sha1, $file-name, Int $adds, Int $deletes {
-        %changes{$sha1} = { file => $file-name, adds => $adds, deletes => $deletes };
-        say "Nuevo recurso → ", %changes{$sha1}.perl;
-        created $sha1, 'application/json', { status => "OK" }; #Responde con un OK
+    put ->  {
+        request-body -> %json-object {
+            %changes{%json-object<sha1>} = { file => %json-object<file-name>,
+                                             adds => %json-object<adds>,
+                                             deletes => %json-object<deletes> };
+            say "Nuevo recurso → ", %changes{%json-object<sha1>}.perl;
+            created %json-object<sha1>, 'application/json', { status => "OK" }; #Responde con un OK
+        }
     }
 }
 

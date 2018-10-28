@@ -23,9 +23,12 @@ def descarga(channel, method, properties, body):
         data_json = response.read()
         data = json.loads(data_json)
         for f in data['files']:
-            put_url = "http://localhost:2314/%s/%s/%s/%s"%(f['sha'],f['filename'], f['additions'],f['deletions'])
-            print(put_url)
-            response = requests.put(put_url)
+            file_data = { "sha1": f['sha'],
+                         "file-name": f['filename'],
+                         "adds": f['additions'],
+                         "deletes": f['deletions']
+            }
+            response = requests.put("http://localhost:2314",data=json.cumps(file_data))
 
 channel.basic_consume(descarga,
                       queue='hook',
