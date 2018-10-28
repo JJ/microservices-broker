@@ -10,7 +10,7 @@ my $application = route {
     put -> $sha1, $file-name, Int $adds, Int $deletes {
         %changes{$sha1} = { file => $file-name, adds => $adds, deletes => $deletes };
         say "Nuevo recurso → ", %changes{$sha1}.perl;
-        created $sha1, 'application/json', { status => "OK" };
+        created $sha1, 'application/json', { status => "OK" }; #Responde con un OK
     }
 }
 

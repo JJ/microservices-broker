@@ -26,9 +26,6 @@ def descarga(channel, method, properties, body):
             response = requests.put("http://localhost.com/%s/%s/%s/%s"
                                     %(f['sha'],f['filename'], f['additions'],f['deletions']))
 
-
-
-
 channel.basic_consume(descarga,
                       queue='hook',
                       no_ack=True)
