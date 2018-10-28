@@ -29,7 +29,9 @@ def descarga(channel, method, properties, body):
                          "deletes": f['deletions']
             }
             print(json.dumps(file_data))
-            response = requests.put("http://localhost:2314",data=json.dumps(file_data))
+            response = requests.put("http://localhost:2314",
+                                    headers={"content-type": "application/json"},
+                                    data=json.dumps(file_data))
             print(response)
 
 channel.basic_consume(descarga,
