@@ -7,6 +7,7 @@
     <title>Qué es un microservicio y por qué debería de importarme</title>
     
     <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/extra.css">
     <link rel="stylesheet" href="css/theme/blood.css">
 
     <!-- Theme used for syntax highlighting of code -->
@@ -19,31 +20,81 @@
 			link.type = 'text/css';
 			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
 			document.getElementsByTagName( 'head' )[0].appendChild( link );
-		</script>
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
-			</div>
-		</div>
+    </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+	<section><h1>Microservicios</h1>
+          <h3>Y por qué deberían de importarme</h3>
+          <h2><code>@jjmerelo</code> para <a href='https://www.meetup.com/es-ES/Granada-Geek/'>Granada Geek</a> + @iv_gii</h2></section>
+        </section>
+        
+	<section
+      data-background='https://farm2.staticflickr.com/1970/45550814272_d102ca4205_k_d.jpg'><h1>Comenzamos
+          con un monolito</h1>
+          <aside class='notes'>Un monolito es la arquitectura
+      tradicional en la que todo se hace en una sola aplicación o
+      fichero y la interacción entre las partes se hace por llamada a
+      métodos o procedimientos. Todo está muy ligado, y no se puede
+            cambiar una parte sin cambiar el resto.</aside>
+        </section>
+        
 
-		<script src="lib/js/head.min.js"></script>
-		<script src="js/reveal.js"></script>
+        <section
+          data-background='https://farm2.staticflickr.com/1937/43783892920_78ee9bef50_h_d.jpg'><h1>Push</h1>
+          <pre><code>
+set :port, 31415
+db = SQLite3::Database.new "files.db"
+post '/' do
+  push = JSON.parse(request.body.read)
+  piezas = push["compare"].split("/")
+  api_url = "/repos/#{piezas[3]}/#{piezas[4]}/compare/#{piezas[6]}"
+  res = HTTParty.get("https://api.github.com#{api_url}")
+  res["files"].each do |file|
+    db.execute("insert into filechanges (sha1,filename,additions,deletions) VALUES (?,?,?,?)",
+               [file["sha"], file["filename"],file["additions"], file["deletions"]])
+  end
+end          </code></pre>
+          <aside class='notes'>Un código monolítico para recoger el
+          resultado de un hook de GitHub (que habrá que configurar), a
+          partir de lo recogido hacer una consulta al API de GitHub,
+            extraer el resultado y guardarlo en la base de datos SQLITE3</aside>
+        </section>
 
-		<script>
-			// More info about config & dependencies:
-			// - https://github.com/hakimel/reveal.js#configuration
-			// - https://github.com/hakimel/reveal.js#dependencies
-			Reveal.initialize({
-				dependencies: [
-					{ src: 'plugin/markdown/marked.js' },
-					{ src: 'plugin/markdown/markdown.js' },
-					{ src: 'plugin/notes/notes.js', async: true },
-					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
-				]
-			});
-		</script>
-	</body>
+        <section
+          data-background='https://farm2.staticflickr.com/1811/44191701532_7be088c3da_k_d.jpg'>
+          <h1><strong>Inconsistencia</strong> en la respuesta</h1>
+          <h2 class='fragment'>Difícil escalado</h2>
+          <h3 class='fragment'>Inflexibilidad en implementación</h3>
+        </section>
+        
+        <section data-background='https://farm1.staticflickr.com/980/40994893785_880fbbc863_k_d.jpg'><h1>Arquitecturas basada en
+          microservicios</h1>
+          <h2 class='fragment'>Divide por servicios
+            <strong>autónomos</strong></h2>
+          <aside class='notes'>Ante la duda, lo importante es que sea autónomo</aside>
+        </section>
+      </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+    
+    <script>
+     // More info about config & dependencies:
+     // - https://github.com/hakimel/reveal.js#configuration
+     // - https://github.com/hakimel/reveal.js#dependencies
+     Reveal.initialize({
+      width: '95%',
+       controls: true,
+       progress: true,
+       history: true,
+       dependencies: [
+	 { src: 'plugin/notes/notes.js', async: true },
+	 { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+       ]
+     });
+    </script>
+  </body>
 </html>
