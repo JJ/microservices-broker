@@ -13,7 +13,7 @@ queue = channel.queue('hello')
 begin
   puts ' [*] Esperando mensajes. Interrumpe con ctrl-C'
   queue.subscribe(block: true) do |_delivery_info, _properties, body|
-    puts " [x] Received #{body}"
+    puts " [x] Recibido #{body}"
   end
   
 rescue Interrupt => _
