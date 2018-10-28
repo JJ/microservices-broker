@@ -30,6 +30,7 @@ def descarga(channel, method, properties, body):
             }
             print(json.dumps(file_data))
             response = requests.put("http://localhost:2314",data=json.dumps(file_data))
+            print(response)
 
 channel.basic_consume(descarga,
                       queue='hook',
