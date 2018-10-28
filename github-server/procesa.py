@@ -3,6 +3,7 @@
 import pika
 import urllib.request
 import json
+import requests
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 channel = connection.channel()
