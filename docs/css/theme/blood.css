@@ -9,7 +9,9 @@
  * For other themes, change $codeBackground accordingly.
  *
  */
-@import url(https://fonts.googleapis.com/css?family=Ubuntu:300,700,300italic,700italic);
+
+ @import url('https://fonts.googleapis.com/css?family=Mali|Overpass+Mono|Rosario');
+
 /*********************************************
  * GLOBAL STYLES
  *********************************************/
@@ -49,16 +51,17 @@ body {
 .reveal h6 {
   margin: 0 0 20px 0;
   color: #eee;
-  font-family: Ubuntu, "sans-serif";
+  font-family: Rosario, "sans-serif";
   font-weight: normal;
   line-height: 1.2;
   letter-spacing: normal;
-  text-transform: uppercase;
   text-shadow: 2px 2px 2px #222;
   word-wrap: break-word; }
 
 .reveal h1 {
-  font-size: 3.77em; }
+    font-family: 'Mali', cursive;
+    font-size: 3.77em;
+}
 
 .reveal h2 {
   font-size: 2.11em; }
@@ -155,8 +158,9 @@ body {
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3); }
 
 .reveal code {
-  font-family: monospace;
-  text-transform: none; }
+    font-family: 'Overpass Mono', monospace;
+    text-transform: none;
+}
 
 .reveal pre code {
   display: block;
