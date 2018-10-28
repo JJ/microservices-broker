@@ -4,8 +4,6 @@
 
 require 'sinatra'
 require 'json'
-require 'httparty'
-require 'pp'
 require 'bunny'
 
 connection = Bunny.new(automatically_recover: false)
