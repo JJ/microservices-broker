@@ -72,6 +72,10 @@ end          </code></pre>
             extraer el resultado y guardarlo en la base de datos SQLITE3</aside>
         </section>
 
+	<section><h1>Usa <code>ngrok</code> para URL</h1>
+	  <h2>Alta del <em>hook</em> en GitHub</h2>
+	</section>
+
 	<!-- Usando servicios REST -->
 	<section>
 	  <section
@@ -106,7 +110,6 @@ alt='status cats'>
 	  </section>
 	</section>
 
-	
         <section
           data-background='https://farm2.staticflickr.com/1811/44191701532_7be088c3da_k_d.jpg' alt='mosaicos con niños'>
           <h1><strong>Inconsistencia</strong> en la respuesta</h1>
@@ -120,6 +123,32 @@ alt='status cats'>
             <strong>autónomos</strong></h2>
           <aside class='notes'>Ante la duda, lo importante es que sea autónomo</aside>
         </section>
+
+	<section>
+	  <section><pre><code>
+connection = Bunny.new(automatically_recover: false)
+connection.start
+channel = connection.create_channel
+queue = channel.queue('hook')
+set :port, 31415
+# Descarga las diferencias hechas para un push
+post '/' do
+  push = JSON.parse(request.body.read)
+  piezas = push["compare"].split("/")
+  channel.default_exchange.publish( "/repos/#{piezas[3]}/#{piezas[4]}/compare/#{piezas[6]}",
+    routing_key: queue.name)
+end</code></pre>
+
+	  </section>
+
+	  <section data-background='https://farm2.staticflickr.com/1970/45562854412_779ac9b375_k_d.jpg' alt='colas en el Midway'>
+	    <h1>Presentando RabbitMQ</h1>
+	  </section>
+		
+	<section><h1>Publicando en la web</h1>
+  <h2 class='fragment'>Heroku, OpenShift</h2>
+  <aside class='notes'>También ciertos servicios dentro de la nube de Azure o Google, o zeit.co si se usa JavaScript</aside>
+</section>
 
 
 	<section><h1>Créditos</h1>
