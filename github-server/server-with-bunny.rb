@@ -20,7 +20,8 @@ puts "Queue name #{queue_name}"
 channel = connection.create_channel
 queue = channel.queue(queue_name) # Cola que configurar
 
-set :port, 31415              # Puerto que configurar
+port_number = client.get('hook_port').kvs.first.value
+set :port, port_number              # Puerto que configurar
 
 # Descarga las diferencias hechas para un push
 post '/' do
