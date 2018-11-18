@@ -4,7 +4,8 @@ import (
 	"bytes"
 	"log"
 	"time"
-
+	"context"
+	
 	"github.com/streadway/amqp"
 	"go.etcd.io/etcd/client"
 )
@@ -37,23 +38,25 @@ func main() {
 	}
 	kapi := client.NewKeysAPI(c)
 
-	resp, err = kapi.Get(context.Background(), "/foo", nil)
+	resp, err := kapi.Get(context.Background(), "exchange_name", nil)
+
+	// RabbitMQ ahora
 	q, err := ch.QueueDeclare(
-		"task_queue", // name
+		resp.Node.Value, // name
 		true,         // durable
 		false,        // delete when unused
 		false,        // exclusive
 		false,        // no-wait
 		nil,          // arguments
 	)
-	failOnError(err, "Failed to declare a queue")
+	failOnError(err, "No se ha declarado la cola")
 
 	err = ch.Qos(
 		1,     // prefetch count
 		0,     // prefetch size
 		false, // global
 	)
-	failOnError(err, "Failed to set QoS")
+	failOnError(err, "No funciona la calidad de servicio")
 
 	msgs, err := ch.Consume(
 		q.Name, // queue
@@ -70,7 +73,7 @@ func main() {
 
 	go func() {
 		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
+			log.Printf("Recibido mensaje: %s", d.Body)
 			dot_count := bytes.Count(d.Body, []byte("."))
 			t := time.Duration(dot_count)
 			time.Sleep(t * time.Second)
@@ -79,6 +82,6 @@ func main() {
 		}
 	}()
 
-	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
+	log.Printf(" [*] Esperando mensajes. Sal con CTRL+C")
 	<-forever
 }
