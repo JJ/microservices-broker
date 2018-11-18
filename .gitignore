@@ -54,4 +54,4 @@ Gemfile.lock
 *~
 
 #Sqlite tables
-*.db
+*.db*.log
