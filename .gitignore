@@ -58,3 +58,5 @@ Gemfile.lock
 *.log
 *.pos
 
+etcd/
+
