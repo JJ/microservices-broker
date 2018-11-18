@@ -15,10 +15,12 @@ connection.start
 client = Etcdv3.new(endpoints: 'http://127.0.0.1:2379')
 
 queue_name = client.get('queue_name').kvs.first.value
-puts "Queue name #{queue_name}"
+exchange_name = client.get('exchange_name').kvs.first.value
+
 
 channel = connection.create_channel
 queue = channel.queue(queue_name) # Cola que configurar
+exchange = channel.fanout(exchange_name) # Intercambio que configurar
 
 port_number = client.get('hook_port').kvs.first.value
 set :port, port_number              # Puerto que configurar
@@ -28,4 +30,5 @@ post '/' do
   push = JSON.parse(request.body.read)
   piezas = push["compare"].split("/")
   channel.default_exchange.publish( "/repos/#{piezas[3]}/#{piezas[4]}/compare/#{piezas[6]}", routing_key: queue.name)
+  exchange.publish( "/repos/#{piezas[3]}/#{piezas[4]}/compare/#{piezas[6]}")
 end
