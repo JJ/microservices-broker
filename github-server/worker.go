@@ -7,7 +7,7 @@ import (
 	"context"
 	
 	"github.com/streadway/amqp"
-	"go.etcd.io/etcd/client"
+	"go.etcd.io/etcd/clientv3"
 )
 
 func failOnError(err error, msg string) {
@@ -26,23 +26,21 @@ func main() {
 	defer ch.Close()
 
 	// Configura etcd
-	cfg := client.Config{
-		Endpoints:               []string{"http://127.0.0.1:2379"},
-		Transport:               client.DefaultTransport,
-		// set timeout per request to fail fast when the target endpoint is unavailable
-		HeaderTimeoutPerRequest: time.Second,
-	}
-	c, err := client.New(cfg)
+	client, err := clientv3.New(clientv3.Config{
+		Endpoints:   []string{"localhost:2379", "localhost:22379", "localhost:32379"},
+		DialTimeout: 5 * time.Second,
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
-	kapi := client.NewKeysAPI(c)
+	ctx, _ := context.WithTimeout(context.Background(), 5 * time.Second)
 
-	resp, err := kapi.Get(context.Background(), "exchange_name", nil)
-
+	resp, err := client.Get(ctx, "exchange_name")
+	log.Printf("Set is done. Metadata is %s\n", resp.Kvs[0].Value)
+	
 	// RabbitMQ ahora
 	q, err := ch.QueueDeclare(
-		resp.Node.Value, // name
+		string(resp.Kvs[0].Value), // name
 		true,         // durable
 		false,        // delete when unused
 		false,        // exclusive
