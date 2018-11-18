@@ -55,6 +55,7 @@ Se puede crear una URL pública con:
 
     ngrok http 31415
     
-Y arrancar un logger con
+<!-- Y arrancar un logger con
 
     fluentd -c fluentd.conf
+-->
