@@ -18,7 +18,7 @@ my $application = route {
     }
 }
 
-# Crea el objeto que sirve
+# Crea el objeto que sirve con configuración en el puerto 2314
 my Cro::Service $service = Cro::HTTP::Server.new(
     :host('localhost'), :port(2314), :$application
 );
