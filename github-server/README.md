@@ -1,5 +1,24 @@
 # Servidor de hooks de GitHub de test
 
+## Servidor de hooks en tres microservicios
+
+Instala todo con
+
+    make install
+    
+(tendrás que tener previamente instalado Ruby 2.x, Python 3.x y Perl
+6)
+
+Instala foreman si no está instalado con 
+
+    gem install foreman
+    
+Y echa a andar los tres servicios con
+
+    foreman start
+    
+
+## Servidor de hooks en un solo fichero
 Instalar con 
 
     bundle install

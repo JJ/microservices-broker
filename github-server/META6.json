@@ -10,7 +10,8 @@
     "perl" : "6.*",
     "source-url" : "https://github.com/JJ/microservices-broker",
     "depends"  : [
-        "Cro"
+        "Cro",
+        "Cro::HTTP::Server"
     ],
     "version" : "0.0.3"
 }
