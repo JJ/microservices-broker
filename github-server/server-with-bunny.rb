@@ -5,12 +5,20 @@
 require 'sinatra'
 require 'json'
 require 'bunny'
+require 'etcdv3'
 
+# Connects to RabbitMQ
 connection = Bunny.new(automatically_recover: false)
 connection.start
 
+# Connects to etcd
+client = Etcdv3.new(endpoints: 'http://127.0.0.1:2379')
+
+queue_name = client.get('queue_name').kvs.first.value
+puts "Queue name #{queue_name}"
+
 channel = connection.create_channel
-queue = channel.queue('hook') # Cola que configurar
+queue = channel.queue(queue_name) # Cola que configurar
 
 set :port, 31415              # Puerto que configurar
 

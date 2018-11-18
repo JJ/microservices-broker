@@ -3,4 +3,5 @@ source 'https://rubygems.org' do
   gem 'json'
   gem 'httparty'
   gem 'sqlite3'
+  gem 'etcdv3'
 end
