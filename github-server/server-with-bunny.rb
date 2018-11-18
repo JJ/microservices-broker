@@ -10,9 +10,9 @@ connection = Bunny.new(automatically_recover: false)
 connection.start
 
 channel = connection.create_channel
-queue = channel.queue('hook')
+queue = channel.queue('hook') # Cola que configurar
 
-set :port, 31415
+set :port, 31415              # Puerto que configurar
 
 # Descarga las diferencias hechas para un push
 post '/' do
