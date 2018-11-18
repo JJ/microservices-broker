@@ -30,5 +30,5 @@ post '/' do
   push = JSON.parse(request.body.read)
   piezas = push["compare"].split("/")
   channel.default_exchange.publish( "/repos/#{piezas[3]}/#{piezas[4]}/compare/#{piezas[6]}", routing_key: queue.name)
-  exchange.publish( "/repos/#{piezas[3]}/#{piezas[4]}/compare/#{piezas[6]}")
+  exchange.publish( "web: /repos/#{piezas[3]}/#{piezas[4]}/compare/#{piezas[6]}")
 end
