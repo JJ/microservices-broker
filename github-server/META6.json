@@ -1,0 +1,16 @@
+{
+    "authors" : [
+	"JJ Merelo"
+    ],
+    "build-depends" : [ ],
+    "depends" : [ ],
+    "description" : "A simple store",
+    "name" : "Github::Server::Store",
+    "license" : "GPL-3.0",
+    "perl" : "6.*",
+    "source-url" : "https://github.com/JJ/microservices-broker",
+    "depends"  : [
+        "Cro"
+    ],
+    "version" : "0.0.3"
+}
