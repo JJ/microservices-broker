@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/streadway/amqp"
+	"go.etcd.io/etcd/client"
 )
 
 func failOnError(err error, msg string) {
@@ -16,13 +17,27 @@ func failOnError(err error, msg string) {
 
 func main() {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
-	failOnError(err, "Failed to connect to RabbitMQ")
+	failOnError(err, "No se ha conectado RabbitMQ")
 	defer conn.Close()
 
 	ch, err := conn.Channel()
-	failOnError(err, "Failed to open a channel")
+	failOnError(err, "No se ha abierto el canal")
 	defer ch.Close()
 
+	// Configura etcd
+	cfg := client.Config{
+		Endpoints:               []string{"http://127.0.0.1:2379"},
+		Transport:               client.DefaultTransport,
+		// set timeout per request to fail fast when the target endpoint is unavailable
+		HeaderTimeoutPerRequest: time.Second,
+	}
+	c, err := client.New(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	kapi := client.NewKeysAPI(c)
+
+	resp, err = kapi.Get(context.Background(), "/foo", nil)
 	q, err := ch.QueueDeclare(
 		"task_queue", // name
 		true,         // durable
