@@ -36,18 +36,19 @@ func main() {
 	ctx, _ := context.WithTimeout(context.Background(), 5 * time.Second)
 
 	resp, err := client.Get(ctx, "exchange_name")
-	log.Printf("Set is done. Metadata is %s\n", resp.Kvs[0].Value)
-	
+	exchange_name := string(resp.Kvs[0].Value)
+
 	// RabbitMQ ahora
-	q, err := ch.QueueDeclare(
-		string(resp.Kvs[0].Value), // name
-		true,         // durable
-		false,        // delete when unused
-		false,        // exclusive
-		false,        // no-wait
-		nil,          // arguments
+	err = ch.ExchangeDeclare(
+		exchange_name, // name
+		"fanout",     // type
+		false,     // durable
+                false,    // auto-deleted
+                false,    // internal
+                false,    // no-wait
+                nil,      // arguments
 	)
-	failOnError(err, "No se ha declarado la cola")
+	failOnError(err, "No se ha declarado la el eschange")
 
 	err = ch.Qos(
 		1,     // prefetch count
@@ -56,6 +57,23 @@ func main() {
 	)
 	failOnError(err, "No funciona la calidad de servicio")
 
+	q, err := ch.QueueDeclare(
+		"",    // name
+		false, // durable
+		false, // delete when usused
+		true,  // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+
+	err = ch.QueueBind(
+		q.Name, // queue name
+		"",     // routing key
+		exchange_name, // exchange
+		false,
+		nil,
+	)
+	
 	msgs, err := ch.Consume(
 		q.Name, // queue
 		"",     // consumer
