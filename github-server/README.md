@@ -1,6 +1,10 @@
 # Servidor de hooks de GitHub de test
 
+
+
 ## Servidor de hooks en tres microservicios
+
+Primero, habrá que asegurarse de que RabbitMQ está andando.
 
 Instala todo con
 
