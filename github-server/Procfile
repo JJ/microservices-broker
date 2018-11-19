@@ -1,3 +1,4 @@
 web:  ./server-with-bunny.rb
+logger: go run worker.go
 store: ./store.p6
 broker: python procesa.py

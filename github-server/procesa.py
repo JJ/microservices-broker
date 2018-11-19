@@ -33,7 +33,7 @@ def descarga(channel, method, properties, body):
                          "deletes": f['deletions']
             }
             print(json.dumps(file_data))
-            response = requests.put("http://localhost:{store_port}",
+            response = requests.put("http://localhost:%s" % store_port,
                                     headers={"content-type": "application/json"},
                                     data=json.dumps(file_data))
             print(response)
