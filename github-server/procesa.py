@@ -14,7 +14,9 @@ hook_name = etcd.get("queue_name")
 channel.queue_declare(queue=hook_name[0].decode('utf8'))
 print( "Channel open" )
 
-# Step #5
+store_port = etcd.get("store_port")
+
+# Se llama a esto
 def descarga(channel, method, properties, body):
     """Called when we receive a message from RabbitMQ"""
     url = body.decode()
@@ -31,7 +33,7 @@ def descarga(channel, method, properties, body):
                          "deletes": f['deletions']
             }
             print(json.dumps(file_data))
-            response = requests.put("http://localhost:2314",
+            response = requests.put("http://localhost:{store_port}",
                                     headers={"content-type": "application/json"},
                                     data=json.dumps(file_data))
             print(response)
