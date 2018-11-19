@@ -4,12 +4,15 @@ import pika
 import urllib.request
 import json
 import requests
+import etcd3
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
 channel = connection.channel()
 print( "Connected" )
 
-channel.queue_declare(queue="hook")
+etcd = etcd3.client()
+hook_name = etcd.get("queue_name")
+channel.queue_declare(queue=hook_name[0].decode('utf8'))
 print( "Channel open" )
 
 # Step #5
