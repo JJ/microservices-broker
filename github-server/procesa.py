@@ -39,11 +39,11 @@ def descarga(channel, method, properties, body):
             }
             channel.basic_publish(exchange=exchange_name,
                                   routing_key='',
-                                  body = json.dumps(file_data))
+                                  body = "broker: %s" % json.dumps(file_data))
             
             response = requests.put("http://localhost:%s" % store_port,
                                     headers={"content-type": "application/json"},
-                                    data= "broker: %s" % json.dumps(file_data))
+                                    data= json.dumps(file_data))
 
             channel.basic_publish(exchange=exchange_name,
                                   routing_key='',
