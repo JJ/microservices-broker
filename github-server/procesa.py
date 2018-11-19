@@ -14,7 +14,8 @@ hook_name = etcd.get("queue_name")
 channel.queue_declare(queue=hook_name[0].decode('utf8'))
 print( "Channel open" )
 
-store_port = etcd.get("store_port")
+store_port = etcd.get("store_port")[0].decode('utf8')
+print("Escuchando a la cola %s y escribiendo en puerto %s" % (hook_name, store_port))
 
 # Se llama a esto
 def descarga(channel, method, properties, body):
