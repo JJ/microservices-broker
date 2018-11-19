@@ -14,6 +14,10 @@ hook_name = etcd.get("queue_name")
 channel.queue_declare(queue=hook_name[0].decode('utf8'))
 print( "Channel open" )
 
+exchange_name = etcd.get("exchange_name")[0].decode('utf8')
+channel.exchange_declare(exchange=exchange_name,
+                         exchange_type='fanout')
+
 store_port = etcd.get("store_port")[0].decode('utf8')
 print("Escuchando a la cola %s y escribiendo en puerto %s" % (hook_name, store_port))
 
@@ -33,12 +37,18 @@ def descarga(channel, method, properties, body):
                          "adds": f['additions'],
                          "deletes": f['deletions']
             }
-            print(json.dumps(file_data))
+            channel.basic_publish(exchange=exchange_name,
+                                  routing_key='',
+                                  body = json.dumps(file_data))
+            
             response = requests.put("http://localhost:%s" % store_port,
                                     headers={"content-type": "application/json"},
-                                    data=json.dumps(file_data))
-            print(response)
+                                    data= "broker: %s" % json.dumps(file_data))
 
+            channel.basic_publish(exchange=exchange_name,
+                                  routing_key='',
+                                  body =  "broker: %s" % response )
+            
 channel.basic_consume(descarga,
                       queue='hook',
                       no_ack=True)
