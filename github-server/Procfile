@@ -1,3 +1,3 @@
 web:  ./server-with-bunny.rb
-broker: python procesa.py
 store: ./store.p6
+broker: python procesa.py
