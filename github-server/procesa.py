@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import pika
-import urllib.request
 import json
 import requests
 import etcd3
@@ -22,10 +21,9 @@ def descarga(channel, method, properties, body):
     print(" [x] Recibido %r" % url )
     piezas = url.split("/")
     api_url = "https://api.github.com/repos/%s/%s/compare/%s"%(piezas[2],piezas[3],piezas[5])
-    with urllib.request.urlopen(api_url) as response:
-        data_json = response.read()
-        print(data_json)
-        data = json.loads(data_json)
+    response = requests.get(api_url)
+    if (response.ok):
+        data = response.json
         for f in data['files']:
             file_data = { "sha1": f['sha'],
                          "file-name": f['filename'],
