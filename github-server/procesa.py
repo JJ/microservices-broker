@@ -23,7 +23,7 @@ def descarga(channel, method, properties, body):
     api_url = "https://api.github.com/repos/%s/%s/compare/%s"%(piezas[2],piezas[3],piezas[5])
     response = requests.get(api_url)
     if (response.ok):
-        data = response.json
+        data = response.json()
         for f in data['files']:
             file_data = { "sha1": f['sha'],
                          "file-name": f['filename'],
