@@ -60,3 +60,5 @@ Gemfile.lock
 
 etcd/
 default.etcd/
+
+__pycache__
