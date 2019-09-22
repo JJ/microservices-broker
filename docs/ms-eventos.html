@@ -1,0 +1,252 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Microservicios basados en eventos</title>
+    
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/extra.css">
+    <link rel="stylesheet" href="css/theme/blood.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+    
+    <!-- Printing and PDF exports -->
+    <script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+  </head>
+  <body>
+    <div class="reveal">
+
+      <div class="slides">
+
+
+	<div class='footer'><a rel="license"
+		 href="http://creativecommons.org/licenses/by-sa/4.0/"><img
+		alt="Licencia de Creative Commons" style="border-width:0"
+src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png"
+/></a><br />This work is under a <a rel="license"
+				    href="http://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA 4.0 license</a>.</div>
+
+
+	<section><h1>Microservicios basados en eventos</h1>
+          <h2><code>@jjmerelo</code> para <a href='https://www.meetup.com/es-ES/LibreLabGRX'>LibreLabGRX</a> + <code>@iv_gii</code></h2>
+        </section>
+        
+	<section
+      data-background='https://farm2.staticflickr.com/1970/45550814272_d102ca4205_k_d.jpg'><h1>Comenzamos
+          con un monolito</h1>
+          <aside class='notes'>Un monolito es la arquitectura
+      tradicional en la que todo se hace en una sola aplicación o
+      fichero y la interacción entre las partes se hace por llamada a
+      métodos o procedimientos. Todo está muy ligado, y no se puede
+            cambiar una parte sin cambiar el resto.</aside>
+        </section>
+
+        <section
+          data-background='https://farm2.staticflickr.com/1937/43783892920_78ee9bef50_h_d.jpg'><h1>Push</h1>
+          <pre><code>
+set :port, 31415
+db = SQLite3::Database.new "files.db"
+post '/' do
+  push = JSON.parse(request.body.read)
+  piezas = push["compare"].split("/")
+  api_url = "/repos/#{piezas[3]}/#{piezas[4]}/compare/#{piezas[6]}"
+  res = HTTParty.get("https://api.github.com#{api_url}")
+  res["files"].each do |file|
+    db.execute("insert into filechanges (sha1,filename,additions,deletions) VALUES (?,?,?,?)",
+               [file["sha"], file["filename"],file["additions"], file["deletions"]])
+  end
+end          </code></pre>
+          <aside class='notes'>Un código monolítico para recoger el
+          resultado de un hook de GitHub (que habrá que configurar), a
+          partir de lo recogido hacer una consulta al API de GitHub,
+            extraer el resultado y guardarlo en la base de datos SQLITE3</aside>
+        </section>
+
+	<section><h1>Usa <code>ngrok</code> para URL</h1>
+	  <h2>Alta del <em>hook</em> en GitHub</h2>
+	</section>
+
+	<!-- Usando servicios REST -->
+	<section>
+	  <section
+	data-background='https://farm5.staticflickr.com/4466/37802027796_0959465593_o_d.jpg'
+alt='rest'>
+	    <h1><strong>REST</strong>, el interfaz universal</h1>
+	  <aside class='notes'>REST significa representational state
+	transfer, y se ha convertido últimamente en la forma preferida
+	de programar servicios web por su versatilidad y aceptación en
+	todo tipo de lenguajes. Permite además estructurar fácilmente
+	una aplicación de forma que pueda ser usada por todo tipo de
+	    front-ends, con todas las condiciones de seguridad que sean necesarias.</aside>
+	  </section>
+
+	  <section data-background='https://farm5.staticflickr.com/4086/4967856349_8cc3327137_b_d.jpg'><h1><code>PUT</code>, <code>GET</code>,
+	  <code>POST</code> y <code>DELETE</code></h1>
+	  <aside class='notes'>Son las órdenes más usadas dentro de
+	  los marcos REST, aunque hay otras. Cada una de ellas tiene
+	  un significado específico, pero depende del programador que
+	    se implemente ese significado</aside>
+	  </section>
+
+        <section
+          data-background='https://farm2.staticflickr.com/1811/44191701532_7be088c3da_k_d.jpg' alt='mosaicos con niños'>
+          <h1><strong>Inconsistencia</strong> en la respuesta</h1>
+          <h2 class='fragment'>Difícil escalado</h2>
+          <h3 class='fragment'>Inflexibilidad en implementación</h3>
+        </section>
+        
+        <section data-background='https://farm1.staticflickr.com/980/40994893785_880fbbc863_k_d.jpg'><h1>Arquitecturas basada en
+          microservicios</h1>
+          <h2 class='fragment'>Divide por servicios
+            <strong>autónomos</strong></h2>
+          <aside class='notes'>Ante la duda, lo importante es que sea
+          autónomo. Separación de preocupaciones: cada servicio se
+          encarga de su propio conjunto de datos y acciones.</aside>
+        </section>
+
+	<section>
+	  <section><pre><code>
+connection = Bunny.new(automatically_recover: false)
+connection.start
+channel = connection.create_channel
+queue = channel.queue('hook')
+set :port, 31415
+# Descarga las diferencias hechas para un push
+post '/' do
+  push = JSON.parse(request.body.read)
+  piezas = push["compare"].split("/")
+  channel.default_exchange.publish( "/repos/#{piezas[3]}/#{piezas[4]}/compare/#{piezas[6]}",
+    routing_key: queue.name)
+end</code></pre>
+
+	  </section>
+
+	  <section data-background='https://farm2.staticflickr.com/1970/45562854412_779ac9b375_k_d.jpg' alt='colas en el Midway'>
+	    <h1>Presentando RabbitMQ</h1>
+	  </section>
+
+	  <section><h1>Usando <em>brokers</em> para conectar</h1>
+	    <aside class='notes'>Con lo que se consigue consistencia en la respuesta.</aside>
+	  </section>
+
+	</section>
+
+	<section><h1>Procesando la cola</h1>
+
+	  <pre><code>connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+channel = connection.channel()
+print( "Connected" )
+channel.queue_declare(queue="hook")
+print( "Channel open" )
+def descarga(channel, method, properties, body):
+    """Called when we receive a message from RabbitMQ"""
+    url = body.decode()
+    print(" [x] Recibido %r" % url )
+    piezas = url.split("/")
+    api_url = "https://api.github.com/repos/%s/%s/compare/%s"%(piezas[2],piezas[3],piezas[5])
+	  </code></pre>
+	</section>
+        
+	  <section><pre><code>    with urllib.request.urlopen(api_url) as response:
+        data_json = response.read()
+        data = json.loads(data_json)
+        for f in data['files']:
+            file_data = { "sha1": f['sha'],
+                         "file-name": f['filename'],
+                         "adds": f['additions'],
+                         "deletes": f['deletions']
+            }
+            print(json.dumps(file_data))
+            response = requests.put("http://localhost:2314",
+                                    headers={"content-type": "application/json"},
+                                    data=json.dumps(file_data))
+            print(response)
+	    </code></pre>
+	  </section>
+
+	  <section><pre><code>
+channel.basic_consume(descarga,
+                      queue='hook',
+                      no_ack=True)
+
+print( ' [*] Esperando mensajes. Interrumpe con ctrl-C' )
+channel.start_consuming()</code></pre>
+
+	    <aside class='notes'>Con esto se consume la cola de
+	  RabbitMQ en Python</aside>
+	  </section>
+	  
+	</section>
+
+	<section>
+	  <h1>Almacenando el resultado</h1>
+	  <code><pre>my %changes;
+my $application = route {
+    put ->  {
+        request-body -> %json-object {
+            %changes{%json-object&lt;sha1>} = { file => %json-object&lt;file-name>,
+                                             adds => %json-object&lt;adds>,
+                                             deletes => %json-object&lt;deletes> };
+            say "Nuevo recurso → ", %changes{%json-object&lt;sha1>}.perl;
+            created %json-object&lt;sha1>, 'application/json', { status => "OK" }; #Responde con un OK
+        }
+    }
+}
+			</code></pre>
+	</section>
+		
+	<section><h1>Publicando en la web</h1>
+	  <h2 class='fragment'>Heroku, <code>zeit.co</code>, Azure WebApps</h2>
+	  <aside class='notes'>También ciertos servicios dentro de la nube de Azure o Google, o zeit.co si se usa JavaScript</aside>
+	</section>
+
+	<section><h1><strong>Piensa</strong> en microservicios</h1>
+	  <h2 class='fragment'>Sé políglota</h2>
+	</section>
+	
+	<section><h1>Créditos</h1>
+	  <ul class='credits'>
+	    <li><a
+	      href='https://www.flickr.com/photos/psd/4967856349/in/album-72157624761570609/'>REST
+	      cards</a></li>
+	    <li><a
+	  href='https://www.flickr.com/photos/girliemac/albums/72157628409467125/with/6512628175/'>Gatos
+	      con estados HTTP</a></li>
+	    <li>Uno de <a
+	    href='https://www.flickr.com/photos/56380734@N05/8661569286/'>Comrade
+		King</a></li>
+	  </ul>
+	</section>
+
+      </div>
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+    
+    <script>
+     // More info about config & dependencies:
+     // - https://github.com/hakimel/reveal.js#configuration
+     // - https://github.com/hakimel/reveal.js#dependencies
+     Reveal.initialize({
+      width: '95%',
+       controls: true,
+       progress: true,
+       history: true,
+       dependencies: [
+	 { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+      { src: 'plugin/notes/notes.js', async: true }
+       ]
+     });
+    </script>
+  </body>
+</html>
