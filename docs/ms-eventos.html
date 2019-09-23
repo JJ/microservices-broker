@@ -114,8 +114,12 @@ alt='rest'>
         </section>
 
 	<section>
-	  <section><pre><code>
-connection = Bunny.new(automatically_recover: false)
+	  <section><h1><em>Call-backs</em></h1>
+	    <h2 class='fragment'>Programación reactiva</h2>
+	    <aside class='notes'>Con un bucle de eventos implícito, se responde a un evento llamando a una función, a menudo con algún tipo de objeto implícito contenido en una variable. </aside>
+	  </section>
+	  
+	  <section><pre><code>connection = Bunny.new(automatically_recover: false)
 connection.start
 channel = connection.create_channel
 queue = channel.queue('hook')
@@ -135,7 +139,7 @@ end</code></pre>
 	  </section>
 
 	  <section><h1>Usando <em>brokers</em> para conectar</h1>
-	    <aside class='notes'>Con lo que se consigue consistencia en la respuesta.</aside>
+	    <aside class='notes'>Con lo que se consigue consistencia en la respuesta. La respuesta desde el broker siempre va a ser la misma: se trata simplemente de crear la tarea. La respuesta puede tardar más.</aside>
 	  </section>
 
 	</section>
@@ -182,7 +186,7 @@ print( ' [*] Esperando mensajes. Interrumpe con ctrl-C' )
 channel.start_consuming()</code></pre>
 
 	    <aside class='notes'>Con esto se consume la cola de
-	  RabbitMQ en Python</aside>
+	  RabbitMQ en Python. Estamos creando un callback a "descarga" que "consume" la cola cada vez que se recibe una petición. Pero claro, sólo estamos llamando a una función y hay que hacer algunas cosas. </aside>
 	  </section>
 	  
 	</section>
@@ -201,7 +205,9 @@ my $application = route {
         }
     }
 }
-			</code></pre>
+	  </code></pre>
+
+	  <aside class='notes'>Sigue programación reactiva, en este caso usando Perl. En este caso estamos usando Dancer2, que no es asíncrono. Eso significa que mientras se responda a la petición se va a bloquear el servidor. Sin embargo, otros frameworks, especialmente los que están escritos en JavaScript, sí lo son.</aside>
 	</section>
 		
 	<section><h1>Publicando en la web</h1>
@@ -211,7 +217,61 @@ my $application = route {
 
 	<section><h1><strong>Piensa</strong> en microservicios</h1>
 	  <h2 class='fragment'>Sé políglota</h2>
+	  <aside class='notes'>Porque se van a usar muchos tipos de lenguajes diferentes: hasta ahora tenemos tres.</aside>
 	</section>
+
+	<section><h1>Solicitudes asíncronas</h1>
+	  <pre><code>const diff_url = context.payload.pull_request.diff_url
+      const result = await github.request( diff_url )
+      const files = parse(result.data)
+	  </code></pre>
+	  <aside class='notes'>las peticiones son asíncronas.</aside>
+	</section>
+
+	<section><h1>Una petición asíncrona devuelve una <em>promesa</em></h1>
+	  <h2 class='fragment'>Las promesas se <em>cumplen</em></h2>
+	</section>
+
+	<section><h1>Abstrayendo: Celery</h1>
+	  <h2 class='fragment'>Celery es una librería para gestionar tareas de forma concurrente.</h2>
+	</section>
+
+	<section><h1>Configurando RabbitMQ</h1>
+	  <pre><code>#!/bin/bash
+
+sudo rabbitmqctl add_user iv $RMQ_PASS        # Cambiar a una clave determinada
+sudo rabbitmqctl add_vhost iv                                # Host virtual que vamos a usar
+sudo rabbitmqctl set_permissions -p iv iv ".q*" ".*" ".*" # Permisos del usuario sobre el vhost
+sudo rabbitmqctl set_user_tags iv management                 # Calificción del usuario nuevo.
+	  </code></pre>
+	</section>
+
+	<section><h1>Sirviendo tareas</h1>
+	  <pre><code>from celery import Celery
+import os
+app = Celery('procesa', broker='amqp://iv:{}@localhost/iv'.format(os.environ.get('RMQ_PASS')))
+
+@app.task
+def descarga(url):
+    print("Descargando {}".format(url))
+	  </code></pre>
+	</section>
+
+	<section><h1>Usando el servidor</h1>
+	  <pre><code>#!/usr/bin/env python
+
+from procesa import descarga
+
+r = descarga.delay("http://google.com")
+	    </code>
+	  </pre>
+	</section>
+
+	<section><h1>Usa eventos si</h1>
+	  <h2 class='fragment'>No necesitar respuesta.</h2>
+	  <h2 class='fragment'>No sabes cuanto va a tardar.</h2>
+	</section>
+
 	
 	<section><h1>Créditos</h1>
 	  <ul class='credits'>
